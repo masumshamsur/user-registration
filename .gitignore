@@ -1,0 +1,27 @@
+# Node.js dependencies
+node_modules/
+
+# Environment files
+.env
+
+# Logs
+logs/
+*.log
+
+# Temporary files and directories
+tmp/
+*.tmp
+
+
+# Build artifacts
+dist/
+build/
+
+# IDE/Editor specific
+.idea/
+.vscode/
+*.swp
+.DS_Store
+
+# OS specific files
+Thumbs.db
