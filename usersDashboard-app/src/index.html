@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Users Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <h2>Users Dashboard</h2>
+        <p>Total Registered Users: <span id="totalUsers">Loading...</span></p>
+        
+        <h3>Search Users by Country</h3>
+        <form id="searchForm">
+            <label for="country">Country:</label>
+            <input type="text" id="country" name="country" required>
+            <button type="submit">Search</button>
+        </form>
+        
+        <table id="userTable">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Country</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <script>
+        async function fetchTotalUsers() {
+            const response = await fetch('/total-users');
+            const data = await response.json();
+            document.getElementById('totalUsers').innerText = data.count;
+        }
+
+        document.getElementById('searchForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const country = document.getElementById('country').value;
+            const response = await fetch(`/search-users?country=${encodeURIComponent(country)}`);
+            const users = await response.json();
+            
+            const tableBody = document.querySelector('#userTable tbody');
+            tableBody.innerHTML = ''; // Clear previous data
+
+            users.forEach(user => {
+                const row = `<tr><td>${user.name}</td><td>${user.email}</td><td>${user.country}</td></tr>`;
+                tableBody.insertAdjacentHTML('beforeend', row);
+            });
+        });
+
+        fetchTotalUsers();
+    </script>
+</body>
+</html>
