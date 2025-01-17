@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: users-dashboard
-        image: masum012924/users-dashboard-app:v2
+        image: masum012924/users-dashboard-app:v3
         ports:
         - containerPort: 4000
 ---
