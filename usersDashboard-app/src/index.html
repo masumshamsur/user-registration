@@ -18,6 +18,8 @@
             <button type="submit">Search</button>
         </form>
         
+        <div id="searchResultMessage" style="margin-top: 20px;"></div>
+        
         <table id="userTable">
             <thead>
                 <tr>
@@ -41,15 +43,21 @@
             event.preventDefault();
             const country = document.getElementById('country').value;
             const response = await fetch(`/search-users?country=${encodeURIComponent(country)}`);
-            const users = await response.json();
-            
+            const data = await response.json();
+
             const tableBody = document.querySelector('#userTable tbody');
+            const resultMessage = document.getElementById('searchResultMessage');
             tableBody.innerHTML = ''; // Clear previous data
 
-            users.forEach(user => {
-                const row = `<tr><td>${user.name}</td><td>${user.email}</td><td>${user.country}</td></tr>`;
-                tableBody.insertAdjacentHTML('beforeend', row);
-            });
+            if (data.length === 0) {
+                resultMessage.innerHTML = `<p style="color: red;">There are no records available for the country: <b>${country}</b>.</p>`;
+            } else {
+                resultMessage.innerHTML = `<p style="color: green;">There are ${data.length} record(s) available for the country: <b>${country}</b>.</p>`;
+                data.forEach(user => {
+                    const row = `<tr><td>${user.name}</td><td>${user.email}</td><td>${user.country}</td></tr>`;
+                    tableBody.insertAdjacentHTML('beforeend', row);
+                });
+            }
         });
 
         fetchTotalUsers();

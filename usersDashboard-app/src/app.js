@@ -24,8 +24,11 @@ app.get('/total-users', async (req, res) => {
 app.get('/search-users', async (req, res) => {
     const { country } = req.query;
     try {
-        const result = await pool.query('SELECT name, email, country FROM users WHERE country ILIKE $1', [`%${country}%`]);
-        res.json(result.rows);
+        const result = await pool.query(
+            'SELECT name, email, country FROM users WHERE country ILIKE $1',
+            [`%${country}%`]
+        );
+        res.json(result.rows); // Send the filtered results
     } catch (err) {
         console.error(err.message);
         res.status(500).json({ error: 'Server error' });
