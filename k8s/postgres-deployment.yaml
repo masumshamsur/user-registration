@@ -1,3 +1,31 @@
+# What do we want?
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pvc
+spec:
+  storageClassName: mylocalstorage
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 500Mi
+---
+# How do we want it implemented
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: local-storage
+spec:
+  storageClassName: mylocalstorage
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/data"
+---
+#Deployment yeaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -16,14 +44,32 @@ spec:
       - name: postgres
         image: postgres
         env:
-        - name: POSTGRES_USER
-          value: "postgres"
-        - name: POSTGRES_PASSWORD
-          value: "password"
-        - name: POSTGRES_DB
-          value: "registration"
+          - name: POSTGRES_USER
+            value: "postgres"
+          - name: POSTGRES_PASSWORD
+            value: "password"
+          - name: POSTGRES_DB
+            value: "registration"
         ports:
-        - containerPort: 5432
+          - containerPort: 5432
+        readinessProbe:
+          exec:
+            command:
+              - pg_isready
+              - -U
+              - postgres
+          initialDelaySeconds: 5  # Wait 5 seconds before the first check
+          periodSeconds: 5        # Check readiness every 5 seconds
+          timeoutSeconds: 3       # Timeout for each readiness check
+          failureThreshold: 3     # Mark as not ready after 3 consecutive failures
+          successThreshold: 1     # Mark as ready after 1 successful check  
+        volumeMounts: 
+          - name: porstgres-persistent-storage 
+            mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: porstgres-persistent-storage
+          persistentVolumeClaim:
+            claimName: postgres-pvc
 ---
 apiVersion: v1
 kind: Service
