@@ -1,4 +1,4 @@
-# What do we want?
+# Persistent Volume Claim
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -11,7 +11,7 @@ spec:
     requests:
       storage: 500Mi
 ---
-# How do we want it implemented
+# Persistent Volume
 apiVersion: v1
 kind: PersistentVolume
 metadata:
@@ -25,7 +25,7 @@ spec:
   hostPath:
     path: "/mnt/data"
 ---
-#Deployment yeaml
+# PostgreSQL Deployment
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -58,19 +58,20 @@ spec:
               - pg_isready
               - -U
               - postgres
-          initialDelaySeconds: 5  # Wait 5 seconds before the first check
-          periodSeconds: 5        # Check readiness every 5 seconds
-          timeoutSeconds: 3       # Timeout for each readiness check
-          failureThreshold: 3     # Mark as not ready after 3 consecutive failures
-          successThreshold: 1     # Mark as ready after 1 successful check  
+          initialDelaySeconds: 10  # Increased to ensure database readiness
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+          successThreshold: 1
         volumeMounts: 
-          - name: porstgres-persistent-storage 
+          - name: postgres-persistent-storage 
             mountPath: /var/lib/postgresql/data
       volumes:
-        - name: porstgres-persistent-storage
+        - name: postgres-persistent-storage
           persistentVolumeClaim:
             claimName: postgres-pvc
 ---
+# PostgreSQL Service
 apiVersion: v1
 kind: Service
 metadata:
@@ -79,7 +80,7 @@ spec:
   selector:
     app: postgres
   ports:
-  - protocol: TCP
-    port: 5432
-    targetPort: 5432
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432
   clusterIP: None

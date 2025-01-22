@@ -1,7 +1,7 @@
 const express = require('express');
 const path = require('path');
 const app = express();
-const pool = require('./db'); // Database connection pool
+const pool = require('./db');
 
 // Middleware to parse JSON bodies
 app.use(express.json());
@@ -25,17 +25,23 @@ const createTableIfNotExists = async () => {
             country VARCHAR(100) NOT NULL
         );
     `;
-    try {
-        await pool.query(query);
-        console.log('Users table ensured in database.');
-    } catch (err) {
-        console.error('Error creating users table:', err.message);
+
+    for (let attempt = 1; attempt <= 5; attempt++) {
+        try {
+            console.log(`Attempt ${attempt}: Creating users table...`);
+            await pool.query(query);
+            console.log('Users table created or already exists.');
+            break;
+        } catch (err) {
+            console.error(`Attempt ${attempt}: Error creating users table: ${err.message}`);
+            if (attempt === 5) throw err;
+            await new Promise(res => setTimeout(res, 2000)); // Wait 2 seconds before retrying
+        }
     }
 };
 
 // Ensure the table is created when the server starts
 createTableIfNotExists();
-
 
 // Route to handle registration form submission
 app.post('/register', async (req, res) => {
@@ -51,7 +57,11 @@ app.post('/register', async (req, res) => {
             'INSERT INTO users (name, email, country) VALUES ($1, $2, $3)',
             [name, email, country]
         );
+        //res.json({ message: 'User registered successfully' });
+
+        // Send success message as a response that can be used in frontend
         res.send('<h3 style="text-align: center;">User registered successfully!</h3>');
+
     } catch (err) {
         console.error('Error inserting data:', err.message);
         res.status(500).send(`Server Error: ${err.message}`);
