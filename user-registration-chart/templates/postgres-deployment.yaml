@@ -1,4 +1,29 @@
-
+# templates/postgres.yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Chart.Name }}-postgres-pvc
+spec:
+  storageClassName: mylocalstorage
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.postgres.pvc.size }}
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ .Chart.Name }}-local-storage
+spec:
+  storageClassName: mylocalstorage
+  capacity:
+    storage: {{ .Values.postgres.volume.size }}
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: {{ .Values.postgres.volume.path }}
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
