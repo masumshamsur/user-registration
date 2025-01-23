@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Chart.Name }}-registration-app-deployment
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: registration-app
+  template:
+    metadata:
+      labels:
+        app: registration-app
+    spec:
+      containers:
+      - name: registration-app
+        image: {{ .Values.registrationApp.image.repository }}:{{ .Values.registrationApp.image.tag }}
+        ports:
+        - containerPort: {{ .Values.registrationApp.service.port }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Chart.Name }}-registration-app-service
+spec:
+  selector:
+    app: registration-app
+  ports:
+  - protocol: TCP
+    port: {{ .Values.registrationApp.service.port }}
+    targetPort: {{ .Values.registrationApp.service.port }}
+  type: {{ .Values.registrationApp.service.type }}

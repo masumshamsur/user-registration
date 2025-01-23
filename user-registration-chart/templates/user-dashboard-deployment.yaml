@@ -1,0 +1,33 @@
+# templates/users-dashboard.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Chart.Name }}-users-dashboard
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: users-dashboard
+  template:
+    metadata:
+      labels:
+        app: users-dashboard
+    spec:
+      containers:
+      - name: users-dashboard
+        image: {{ .Values.usersDashboard.image.repository }}:{{ .Values.usersDashboard.image.tag }}
+        ports:
+        - containerPort: {{ .Values.usersDashboard.service.targetPort }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Chart.Name }}-dashboard-service
+spec:
+  selector:
+    app: users-dashboard
+  ports:
+  - protocol: TCP
+    port: {{ .Values.usersDashboard.service.port }}
+    targetPort: {{ .Values.usersDashboard.service.targetPort }}
+  type: {{ .Values.usersDashboard.service.type }}

@@ -1,0 +1,33 @@
+# values.yaml
+replicaCount: 1
+
+registrationApp:
+  image:
+    repository: masum012924/registration-app
+    tag: v3
+  service:
+    port: 3000
+    type: NodePort
+
+usersDashboard:
+  image:
+    repository: masum012924/users-dashboard-app
+    tag: v3
+  service:
+    port: 80
+    targetPort: 4000
+    type: LoadBalancer
+
+postgres:
+  image:
+    repository: postgres
+    tag: latest
+  pvc:
+    size: 500Mi
+  volume:
+    path: /mnt/data
+    size: 1Gi
+  config:
+    POSTGRES_USER: postgres
+    POSTGRES_DB: registration
+    POSTGRES_PASSWORD: password # Default password to be encoded as base64    
