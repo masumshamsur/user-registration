@@ -15,33 +15,39 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// Automatically create the 'users' table if it does not exist
-const createTableIfNotExists = async () => {
-    const query = `
-        CREATE TABLE IF NOT EXISTS users (
-            id SERIAL PRIMARY KEY,
-            name VARCHAR(100) NOT NULL,
-            email VARCHAR(100) UNIQUE NOT NULL,
-            country VARCHAR(100) NOT NULL
-        );
-    `;
-
-    for (let attempt = 1; attempt <= 5; attempt++) {
+// Retry mechanism for creating the 'users' table
+const retryCreateTable = async (retries = 5, delay = 2000) => {
+    for (let i = 0; i < retries; i++) {
         try {
-            console.log(`Attempt ${attempt}: Creating users table...`);
+            const query = `
+                CREATE TABLE IF NOT EXISTS users (
+                    id SERIAL PRIMARY KEY,
+                    name VARCHAR(100) NOT NULL,
+                    email VARCHAR(100) UNIQUE NOT NULL,
+                    country VARCHAR(100) NOT NULL
+                );
+            `;
             await pool.query(query);
-            console.log('Users table created or already exists.');
-            break;
+            console.log('Users table ensured in database.');
+            return; // Exit function if successful
         } catch (err) {
-            console.error(`Attempt ${attempt}: Error creating users table: ${err.message}`);
-            if (attempt === 5) throw err;
-            await new Promise(res => setTimeout(res, 2000)); // Wait 2 seconds before retrying
+            console.error(`Attempt ${i + 1}: Error creating users table:`, err.message);
+            if (i < retries - 1) {
+                await new Promise(resolve => setTimeout(resolve, delay)); // Wait before retrying
+            } else {
+                throw new Error('Failed to ensure users table after retries');
+            }
         }
     }
 };
 
 // Ensure the table is created when the server starts
-createTableIfNotExists();
+retryCreateTable()
+    .then(() => console.log('Database setup complete.'))
+    .catch(err => {
+        console.error('Critical error during table creation:', err.message);
+        process.exit(1); // Exit the process if table creation fails
+    });
 
 // Route to handle registration form submission
 app.post('/register', async (req, res) => {
