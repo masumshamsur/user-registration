@@ -18,6 +18,6 @@ COPY src/ ./src
 # Expose the port your app listens on
 EXPOSE 3000
 
-# Start the application
-CMD ["node", "src/app.js"]
+# Wait for the database to be ready before starting the app
+CMD ["sh", "-c", "sleep 10 && node src/app.js"]
 
