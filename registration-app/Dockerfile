@@ -1,8 +1,5 @@
 FROM node:14-alpine
 
-# Install dependencies for native modules (if needed)
-RUN apk add --no-cache libc6-compat python3 make g++
-
 # Create app directory
 WORKDIR /usr/src/app
 
