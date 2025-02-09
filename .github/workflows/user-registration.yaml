@@ -60,12 +60,14 @@ jobs:
         tags: ${{ secrets.DOCKER_USERNAME }}/users-dashboard-app:${{ env.VERSION }}   
     
     # Update image tags in Helm values.yaml
-    - name: Update image tags in Helm values.yaml
+    - name: Install yq
+      run: sudo apt-get install -y yq
+  
+    - name: Update image tags using yq
       run: |
-       sed -i "/registrationApp:/,/image:/ s|\(tag:\s*\).*|\1${{ env.VERSION }}|" user-registration-chart/values.yaml
-       sed -i "/usersDashboard:/,/image:/ s|\(tag:\s*\).*|\1${{ env.VERSION }}|" user-registration-chart/values.yaml
-      shell: bash  
-
+        yq eval ".registrationApp.image.tag = \"${{ env.VERSION }}\"" -i user-registration-chart/values.yaml
+        yq eval ".usersDashboard.image.tag = \"${{ env.VERSION }}\"" -i user-registration-chart/values.yaml
+  
     # Debug values.yaml changes  
     - name: Debug Values File Changes
       run: cat user-registration-chart/values.yaml
