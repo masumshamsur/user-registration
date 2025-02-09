@@ -37,11 +37,9 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}  
 
-    - name: Docker tag
-      id: version
-      run: |
-       VERSION=v$(date +"%Y%m%d%H%M%S")
-       echo "VERSION $VERSION" >> $GITHUB_ENV
+    - name: Set docker image version variable
+      run: echo "VERSION=v$(date +'%Y%m%d%H%M%S')" >> $GITHUB_ENV
+      shell: bash
 
     # Build and push the registration app image
     - name: Build and push registration app image
