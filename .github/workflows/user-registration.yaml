@@ -57,6 +57,24 @@ jobs:
         context: ./users-dashboard-app 
         file: ./users-dashboard-app/Dockerfile
         push: true
-        tags: ${{ secrets.DOCKER_USERNAME }}/users-dashboard-app:${{ env.VERSION }}     
+        tags: ${{ secrets.DOCKER_USERNAME }}/users-dashboard-app:${{ env.VERSION }}   
+    
+    # Update image tags in Helm values.yaml
+    - name: Update image tags in Helm values.yaml
+      run: |
+        sed -i "s|registrationApp.image.tag: .*|registrationApp.image.tag: ${VERSION}|" user-registration-chart/values.yaml
+        sed -i "s|usersDashboard.image.tag: .*|usersDashboard.image.tag: ${VERSION}|" user-registration-chart/values.yaml
+      shell: bash
+
+    # Commit the updated values.yaml
+    - name: Commit and push updated values.yaml
+      run: |
+        git config --global user.name "github-actions"
+        git config --global user.email "github-actions@github.com"
+        git add user-registration-chart/values.yaml
+        git commit -m "Update Helm values.yaml with new image tag: ${VERSION}"
+        git push
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         
     
