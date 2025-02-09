@@ -74,7 +74,7 @@ jobs:
     - name: Commit and push updated values.yaml
       run: |
         git config --global user.name "github-actions"
-        git config --global user.email "github-actions@github.com"
+        git config --global user.email "masumqahelp@gmail.com"
         git add user-registration-chart/values.yaml
         git commit -m "Update Helm values.yaml with new image tag: ${VERSION}"
         git push https://${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository}}.git HEAD:develop
