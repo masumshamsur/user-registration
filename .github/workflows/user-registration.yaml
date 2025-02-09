@@ -79,6 +79,8 @@ jobs:
         git commit -m "Update Helm values.yaml with new image tag: ${VERSION}"
         git push
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+
+     # lets try till this point   
         
     
