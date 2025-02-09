@@ -61,12 +61,16 @@ jobs:
     
     # Update image tags in Helm values.yaml
     - name: Install yq
-      run: sudo apt-get install -y yq
+      run: |
+        wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/local/bin/yq
+        chmod +x /usr/local/bin/yq
   
     - name: Update image tags using yq
       run: |
-        yq eval ".registrationApp.image.tag = \"${{ env.VERSION }}\"" -i user-registration-chart/values.yaml
-        yq eval ".usersDashboard.image.tag = \"${{ env.VERSION }}\"" -i user-registration-chart/values.yaml
+          yq -i '.registrationApp.image.tag = strenv(VERSION)' user-registration-chart/values.yaml
+          yq -i '.usersDashboard.image.tag = strenv(VERSION)' user-registration-chart/values.yaml
+      env:
+          VERSION: ${{ env.VERSION }}
   
     # Debug values.yaml changes  
     - name: Debug Values File Changes
