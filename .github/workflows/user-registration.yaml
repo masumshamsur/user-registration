@@ -54,8 +54,8 @@ jobs:
     - name: Build and push users deshbiard app image
       uses: docker/build-push-action@v4
       with:
-        context: ./users-dashboard  
-        file: ./users-dashboard/Dockerfile
+        context: ./users-dashboard-app 
+        file: ./users-dashboard-app/Dockerfile
         push: true
         tags: ${{ secrets.DOCKER_USERNAME }}/users-dashboard-app:${{ env.VERSION }}     
         
