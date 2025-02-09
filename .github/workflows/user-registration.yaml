@@ -62,8 +62,7 @@ jobs:
     # Update image tags in Helm values.yaml
     - name: Update image tags in Helm values.yaml
       run: |
-        sed -i "s|registrationApp.image.tag: .*|registrationApp.image.tag: ${{ env.VERSION }}|" user-registration-chart/values.yaml
-        sed -i "s|usersDashboard.image.tag: .*|usersDashboard.image.tag: ${{ env.VERSION }}|" user-registration-chart/values.yaml
+        sed -i "s|^\(\s*tag:\s*\).*|\1${{ env.VERSION }}" user-registration-chart/values.yaml
       shell: bash
 
     # Debug values.yaml changes  
