@@ -1,4 +1,3 @@
-# values.yaml
 replicaCount: 1
 
 registrationApp:
@@ -21,7 +20,7 @@ usersDashboard:
 postgres:
   image:
     repository: postgres
-    tag: v20250209150822
+    tag: latest
   pvc:
     size: 500Mi
   volume:
@@ -30,4 +29,4 @@ postgres:
   config:
     POSTGRES_USER: postgres
     POSTGRES_DB: registration
-    POSTGRES_PASSWORD: password # Default password to be encoded as base64    
+    POSTGRES_PASSWORD: password # Default password to be encoded as base64
