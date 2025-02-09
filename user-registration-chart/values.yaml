@@ -4,7 +4,7 @@ replicaCount: 1
 registrationApp:
   image:
     repository: masum012924/registration-app
-    tag: v4
+    tag: v20250209075424
   service:
     port: 3000
     type: NodePort
@@ -12,7 +12,7 @@ registrationApp:
 usersDashboard:
   image:
     repository: masum012924/users-dashboard-app
-    tag: v3
+    tag: v20250209075424
   service:
     port: 80
     targetPort: 4000
@@ -21,7 +21,7 @@ usersDashboard:
 postgres:
   image:
     repository: postgres
-    tag: latest
+    tag: v20250209075424
   pvc:
     size: 500Mi
   volume:
