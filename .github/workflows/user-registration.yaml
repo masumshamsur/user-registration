@@ -66,6 +66,10 @@ jobs:
         sed -i "s|usersDashboard.image.tag: .*|usersDashboard.image.tag: ${VERSION}|" user-registration-chart/values.yaml
       shell: bash
 
+    # Debug values.yaml changes  
+    - name: Debug Values File Changes
+      run: cat user-registration-chart/values.yaml
+
     # Commit the updated values.yaml
     - name: Commit and push updated values.yaml
       run: |
