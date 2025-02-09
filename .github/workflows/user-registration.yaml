@@ -1,0 +1,63 @@
+name: user registration
+on:
+  workflow_dispatch:  
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+
+    # Checkout the repository    
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    # Setup nodeJS
+    - name: Setup Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14'
+    
+    # Docker Setup
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+
+    # Install dependencies
+    - name: Install dependencies
+      run: |
+        npm install
+
+     # Login to Docker Hub
+    - name: Login to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}  
+
+    - name: Docker tag
+      id: version
+      run: |
+       VERSION=v$(date +"%Y%m%d%H%M%S")
+       echo "VERSION $VERSION" >> $GITHUB_ENV
+
+    # Build and push the registration app image
+    - name: Build and push registration app image
+      uses: docker/build-push-axction@v4
+      with:
+            context: ./registration-app
+            file: ./registration-app/Dockerfile
+            push: true
+            tags: ${{ secrets.DOCKER_USERNAME }}/registration-app:${{ env.VERSION }}
+
+    # Build and push the users dashboard app image
+    - name: Build and push users deshbiard app image
+      uses: docker/build-push-action@v4
+      with:
+        context: ./users-dashboard  
+        file: ./users-dashboard/Dockerfile
+        push: true
+        tags: ${{ secrets.DOCKER_USERNAME }}/users-dashboard-app:${{ env.VERSION }}     
+        
+    
