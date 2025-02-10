@@ -108,3 +108,16 @@ form button:hover {
         padding: 8px 14px;
     }
 }
+
+/* Footer Styling */
+footer {
+    margin-top: 20px;
+    text-align: center;
+    font-size: .8rem;
+    color: #555;
+}
+
+footer p {
+    display: block;
+    text-align: center;
+}
